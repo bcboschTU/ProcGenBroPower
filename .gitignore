@@ -26,3 +26,6 @@
 *.exe
 *.out
 *.app
+ProcGenBroPower/Debug/
+ProcGenBroPower/ProcGenBroPower/Debug/
+ProcGenBroPower/ProcGenBroPower.opensdf
