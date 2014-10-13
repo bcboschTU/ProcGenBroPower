@@ -7,10 +7,13 @@
 //
 
 #include "controls.h"
-float speed = 1.0f;
+float translateSpeed = 3.0f;
+float zoomSpeed = 1.0f;
 
 Camera::Camera() :
-    _position(0.0f, 0.0f, 1.0f)
+    _position(0.0f, 0.0f, 1.0f),
+    _minZoom(0.1),
+    _maxZoom(4)
 {}
 
 const glm::vec3& Camera::getPosition() const {
@@ -30,20 +33,29 @@ void Camera::computeInputs(GLFWwindow* window){
 	float deltaTime = float(currentTime - lastTime);
 	// Move forward
 	if (glfwGetKey( window, GLFW_KEY_UP ) == GLFW_PRESS){
-		_position.y += 1 * deltaTime * speed;
+		_position.y -= 1 * deltaTime * translateSpeed;
 	}
 	// Move backward
 	if (glfwGetKey(window, GLFW_KEY_DOWN ) == GLFW_PRESS){
-		_position.y -= 1 * deltaTime * speed;
+		_position.y += 1 * deltaTime * translateSpeed;
 	}
 	// Strafe right
 	if (glfwGetKey(window, GLFW_KEY_RIGHT ) == GLFW_PRESS){
-		_position.x += 1 * deltaTime * speed;
+		_position.x -= 1 * deltaTime * translateSpeed;
 	}
 	// Strafe left
 	if (glfwGetKey(window, GLFW_KEY_LEFT ) == GLFW_PRESS){
-		_position.x -= 1 * deltaTime * speed;
+		_position.x += 1 * deltaTime * translateSpeed;
 	}
+    if (glfwGetKey(window, GLFW_KEY_Q ) == GLFW_PRESS) {
+        if(_position.z >_minZoom){
+            _position.z -= 1 * deltaTime * zoomSpeed;
+        }
+    }
+    if (glfwGetKey(window, GLFW_KEY_E ) == GLFW_PRESS) {
+        if(_position.z < _maxZoom)
+        _position.z += 1 * deltaTime * zoomSpeed;
+    }
     
 	lastTime = currentTime;
 }

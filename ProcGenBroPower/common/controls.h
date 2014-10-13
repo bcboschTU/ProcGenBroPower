@@ -23,6 +23,8 @@ public:
     
 private:
     glm::vec3 _position;
+    float _minZoom;
+    float _maxZoom;
 };
 
 #endif /* defined(__opengl__controls__) */

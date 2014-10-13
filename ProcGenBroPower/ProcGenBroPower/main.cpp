@@ -3,6 +3,10 @@
 #include <iostream>
 GLFWwindow* window;
 Camera camera;
+int width = 800;
+int height = 600;
+int nearPlane = 0;
+int farPlane = 2;
 
 static void error_callback(int error, const char* description)
 {
@@ -23,7 +27,7 @@ void initGL(int width, int height)
 	// Change to the projection matrix, reset the matrix and set up orthagonal projection (i.e. 2D)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0, width, height, 0, 0, 1); // Paramters: left, right, bottom, top, near, far
+	glOrtho(0, width, height, 0, nearPlane, farPlane); // Paramters: left, right, bottom, top, near, far
     
 	// ----- OpenGL settings -----
     
@@ -45,6 +49,24 @@ void initGL(int width, int height)
 	glEnable(GL_POINT_SMOOTH);	// Enable anti-aliasing on points
 }
 
+void drawGrid(){
+    for(int i = 0; i<=20; i++){
+        glBegin(GL_LINES);
+            glColor3f(1.f, 1.f, 0.f);
+            glVertex2f(20.f, 0.f + (i));
+            glVertex2f(0.f, 0.f + (i));
+        glEnd();
+    }
+    for(int i = 0; i<=20; i++){
+        glBegin(GL_LINES);
+        glColor3f(1.f, 1.f, 0.f);
+        glVertex2f(0.f + (i),0.f);
+        glVertex2f(0.f + (i),20);
+        glEnd();
+    }
+    
+}
+
 void drawScene(){
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT);
@@ -52,9 +74,11 @@ void drawScene(){
     // Reset the matrix
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
-    glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
+    glScaled(camera.getPosition().z, camera.getPosition().z, 1);
+    glTranslatef(camera.getPosition().x, camera.getPosition().y, 0);
     
+    //glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
+    /*
     glBegin(GL_TRIANGLES);
     glColor3f(1.f, 0.f, 0.f);
     glVertex2f(-0.6f, -0.4f);
@@ -63,6 +87,8 @@ void drawScene(){
     glColor3f(0.f, 0.f, 1.f);
     glVertex2f(0.f, 0.6f);
     glEnd();
+    */
+    drawGrid();
     
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -71,9 +97,7 @@ void drawScene(){
 
 int main(void)
 {
-    int width = 800;
-    int height = 600;
-    camera.setPosition(glm::vec3(0,0,0));
+    camera.setPosition(glm::vec3(-2,-2,1));
     // Initialise GLFW
 	if( !glfwInit() )
 	{
