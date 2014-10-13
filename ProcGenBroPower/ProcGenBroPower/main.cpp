@@ -1,123 +1,108 @@
-// A Simple OpenGL Project
-// Author: Michael Hall
-//
-// This C++ code and project are provided "as is"
-// without warranty of any kind. For personal use only,
-// not for distribution. Copyright 2010 XoaX.
+#include <GLFW/glfw3.h>
+#include "controls.h"
+#include <iostream>
+GLFWwindow* window;
+Camera camera;
 
-//Include the standard C++ headers  
-#include <stdio.h>  
-#include <stdlib.h> 
-#include <glut.h>
-#include <glfw3.h>
-#define GLFW_INCLUDE_GLU
-
-void Draw() {
-	glClear(GL_COLOR_BUFFER_BIT);
-	glColor3f(1.0, 1.0, 1.0);
-	glBegin(GL_LINES);
-	glVertex3f(0.25, 0.25, 0.0);
-	glVertex3f(0.75, 0.75, 0.0);
-	glEnd();
-	glFlush();
-}
-
-void Initialize() {
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-}
-
-int glutExample(int iArgc, char** cppArgv) {
-	glutInit(&iArgc, cppArgv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-	glutInitWindowSize(250, 250);
-	glutInitWindowPosition(200, 200);
-	glutCreateWindow("XoaX.net");
-	Initialize();
-	glutDisplayFunc(Draw);
-	glutMainLoop();
-	return 0;
-}
-
-//Define an error callback  
 static void error_callback(int error, const char* description)
 {
-	fputs(description, stderr);
-	_fgetchar();
+    fputs(description, stderr);
 }
 
-//Define the key input callback  
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
-int glfwExample(void)
+void initGL(int width, int height)
 {
-	//Set the error callback  
-	glfwSetErrorCallback(error_callback);
-
-	//Initialize GLFW  
-	if (!glfwInit())
-	{
-		exit(EXIT_FAILURE);
-	}
-
-	//Set the GLFW window creation hints - these are optional  
-	//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); //Request a specific OpenGL version  
-	//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); //Request a specific OpenGL version  
-	//glfwWindowHint(GLFW_SAMPLES, 4); //Request 4x antialiasing  
-	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  
-
-	//Declare a window object  
-	GLFWwindow* window;
-
-	//Create a window and create its OpenGL context  
-	window = glfwCreateWindow(640, 480, "Test Window", NULL, NULL);
-
-	//If the window couldn't be created  
-	if (!window)
-	{
-		fprintf(stderr, "Failed to open GLFW window.\n");
-		glfwTerminate();
-		exit(EXIT_FAILURE);
-	}
-
-	//This function makes the context of the specified window current on the calling thread.   
-	glfwMakeContextCurrent(window);
-
-	//Sets the key callback  
-	glfwSetKeyCallback(window, key_callback);
-
-	//Set a background color  
-	glClearColor(0.0f, 0.0f, 1.0f, 0.0f);
-
-	//Main Loop  
-	do
-	{
-		//Clear color buffer  
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		//Swap buffers  
-		glfwSwapBuffers(window);
-		//Get and organize events, like keyboard and mouse input, window resizing, etc...  
-		glfwPollEvents();
-
-	} //Check if the ESC key had been pressed or if the window had been closed  
-	while (!glfwWindowShouldClose(window));
-
-	//Close OpenGL window and terminate GLFW  
-	glfwDestroyWindow(window);
-	//Finalize and clean up GLFW  
-	glfwTerminate();
-
-	exit(EXIT_SUCCESS);
+	// Setup our viewport to be the entire size of the window
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+    
+	// Change to the projection matrix, reset the matrix and set up orthagonal projection (i.e. 2D)
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0, width, height, 0, 0, 1); // Paramters: left, right, bottom, top, near, far
+    
+	// ----- OpenGL settings -----
+    
+	glfwSwapInterval(1); 		// Lock to vertical sync of monitor (normally 60Hz, so 60fps)
+    
+	glEnable(GL_SMOOTH);		// Enable (gouraud) shading
+    
+	glDisable(GL_DEPTH_TEST); 	// Disable depth testing
+    
+	glEnable(GL_BLEND);		// Enable blending (used for alpha) and blending function to use
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+	glLineWidth(5.0f);		// Set a 'chunky' line width
+    
+	glEnable(GL_LINE_SMOOTH);	// Enable anti-aliasing on lines
+    
+	glPointSize(5.0f);		// Set a 'chunky' point size
+    
+	glEnable(GL_POINT_SMOOTH);	// Enable anti-aliasing on points
 }
-int main(int iArgc, char** cppArgv) {
-	// The first method will render a window, the second will not work.
-	glfwExample();
-	glutExample(iArgc, cppArgv);
+
+void drawScene(){
+    // Clear the screen
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    // Reset the matrix
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
+    glRotatef((float) glfwGetTime() * 50.f, 0.f, 0.f, 1.f);
+    
+    glBegin(GL_TRIANGLES);
+    glColor3f(1.f, 0.f, 0.f);
+    glVertex2f(-0.6f, -0.4f);
+    glColor3f(0.f, 1.f, 0.f);
+    glVertex2f(0.6f, -0.4f);
+    glColor3f(0.f, 0.f, 1.f);
+    glVertex2f(0.f, 0.6f);
+    glEnd();
+    
+    glfwSwapBuffers(window);
+    glfwPollEvents();
+}
+
+
+int main(void)
+{
+    int width = 800;
+    int height = 600;
+    camera.setPosition(glm::vec3(0,0,0));
+    // Initialise GLFW
+	if( !glfwInit() )
+	{
+		fprintf( stderr, "Failed to initialize GLFW\n" );
+		return -1;
+	}
+    
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	   
+	// Open a window and create its OpenGL context
+	window = glfwCreateWindow(width, height, "Simple example", NULL, NULL);
+	if( window == NULL ){
+		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
+		glfwTerminate();
+		return -1;
+	}
+    
+    initGL(width,height);
+	glfwMakeContextCurrent(window);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetErrorCallback(error_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    
+    while (!glfwWindowShouldClose(window))
+    {
+        camera.computeInputs(window);
+        drawScene();
+    }
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
