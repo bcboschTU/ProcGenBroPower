@@ -7,12 +7,12 @@
 //
 
 #include "controls.h"
-float translateSpeed = 3.0f;
-float zoomSpeed = 1.0f;
+float translateSpeed = 6.0f;
+float zoomSpeed = .2f;
 
 Camera::Camera() :
     _position(0.0f, 0.0f, 1.0f),
-    _minZoom(0.1),
+    _minZoom(0.05),
     _maxZoom(4)
 {}
 
