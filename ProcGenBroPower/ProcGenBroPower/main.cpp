@@ -2,15 +2,21 @@
 #include "controls.h"
 #include <GLUT/GLUT.h>
 #include <iostream>
+#include "SOIL.h"
+
 GLFWwindow* window;
 Camera camera;
 int width = 1280;
 int height = 800;
-int camPosX = -10;
+int camPosX = -20;
 int camPosY = -10;
 float camPosZ = 0.05;
 int nearPlane = 0;
 int farPlane = 2;
+GLuint _textureId;
+
+double u3;
+double v3;
 
 static void error_callback(int error, const char* description)
 {
@@ -34,6 +40,13 @@ void custom_fbsize_callback(GLFWwindow* window, int widthR, int heightR)
     glViewport(0, 0, width, height);
 }
 
+GLuint loadPNG()
+{
+    GLuint tex_2d = SOIL_load_OGL_texture( "/Users/bertbosch/Documents/delft/Zelf/ProcGenBroPower/ProcGenBroPower/textures/Sprite_background_effects_0013.png", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+    
+    return tex_2d;
+}
+
 void initGL(int widthR, int heightR)
 {
     glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
@@ -42,7 +55,6 @@ void initGL(int widthR, int heightR)
 	glLoadIdentity();
     glOrtho(-1, 1, -1 * (GLfloat) height / (GLfloat) width, (GLfloat) height/ (GLfloat) width, -1, 1);
 	// ----- OpenGL settings -----
-    
 	glfwSwapInterval(1); 		// Lock to vertical sync of monitor (normally 60Hz, so 60fps)
     
 	glEnable(GL_SMOOTH);		// Enable (gouraud) shading
@@ -51,6 +63,7 @@ void initGL(int widthR, int heightR)
     
 	glEnable(GL_BLEND);		// Enable blending (used for alpha) and blending function to use
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_TEXTURE_2D);
     
 	glLineWidth(1.0f);		// Set a 'chunky' line width
     
@@ -61,27 +74,55 @@ void initGL(int widthR, int heightR)
 	glEnable(GL_POINT_SMOOTH);
 }
 
+void drawBackground(){
+    glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, _textureId);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    
+    glBegin(GL_QUADS);
+    glTexCoord2d( 0,  0); glVertex2f(-40,0);
+    glTexCoord2d(1,  0); glVertex2f(0,0);
+    glTexCoord2d(1, 1); glVertex2f(0, 20);
+    glTexCoord2d( 0, 1); glVertex2f(-40, 20);
+    glEnd();
+    glBegin(GL_QUADS);
+    glTexCoord2d( 0,  0); glVertex2f(0,0);
+    glTexCoord2d(1,  0); glVertex2f(40,0);
+    glTexCoord2d(1, 1); glVertex2f(40, 20);
+    glTexCoord2d( 0, 1); glVertex2f(0, 20);
+    glEnd();
+    
+    glBegin(GL_QUADS);
+    glTexCoord2d( 0,  0); glVertex2f(40,0);
+    glTexCoord2d(1,  0); glVertex2f(80,0);
+    glTexCoord2d(1, 1); glVertex2f(80, 20);
+    glTexCoord2d( 0, 1); glVertex2f(40, 20);
+    glEnd();
+    
+}
+
 void drawGrid(){
+    glColor3f(1.f, 1.f, 0.f);
     for(int i = 0; i<=20; i++){
         glBegin(GL_LINES);
-            glColor3f(1.f, 1.f, 0.f);
             glVertex2f(40.f, 0.f + (i));
             glVertex2f(0.f, 0.f + (i));
         glEnd();
     }
     for(int i = 0; i<=40; i++){
         glBegin(GL_LINES);
-        glColor3f(1.f, 1.f, 0.f);
         glVertex2f(0.f + (i),0.f);
         glVertex2f(0.f + (i),20);
         glEnd();
     }
-    
 }
 
 void drawScene(){
     // Clear the screen
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Reset the matrix
     glMatrixMode(GL_PROJECTION);
@@ -90,15 +131,13 @@ void drawScene(){
     glOrtho(-1, 1, -1 * (GLfloat) height / (GLfloat) width, (GLfloat) height/ (GLfloat) width, -1, 1);
     
     glMatrixMode(GL_MODELVIEW);
-    glPushMatrix ();
     glLoadIdentity();
     
     glScaled(camera.getPosition().z, camera.getPosition().z, 1);
     glTranslatef(camera.getPosition().x, camera.getPosition().y, 0);
     
+    drawBackground();
     drawGrid();
-    
-    glPopMatrix ();
     
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -125,11 +164,16 @@ int main(void)
 		return -1;
 	}
     initGL(width,height);
+    
 	glfwMakeContextCurrent(window);
     glfwSetKeyCallback(window, key_callback);
     glfwSetErrorCallback(error_callback);
     glfwSetFramebufferSizeCallback(window, custom_fbsize_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    
+    glGenTextures(1, &_textureId);
+    glBindTexture(GL_TEXTURE_2D, _textureId);
+    _textureId = loadPNG();
     
     while (!glfwWindowShouldClose(window))
     {
