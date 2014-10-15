@@ -1,22 +1,24 @@
 #include <GLFW/glfw3.h>
-#include "controls.h"
 #include <GLUT/GLUT.h>
+#include "glm.hpp"
+#include "matrix_transform.hpp"
 #include <iostream>
 #include "SOIL.h"
+#include "controls.h"
+#include "tile.h"
 
 GLFWwindow* window;
 Camera camera;
 int width = 1280;
 int height = 800;
-int camPosX = -20;
+int camPosX = -10;
 int camPosY = -10;
 float camPosZ = 0.05;
 int nearPlane = 0;
 int farPlane = 2;
+Tile tiles[100][20];
 GLuint _textureId;
 
-double u3;
-double v3;
 
 static void error_callback(int error, const char* description)
 {
@@ -82,36 +84,39 @@ void drawBackground(){
     glColor3f(1.0f, 1.0f, 1.0f);
     
     glBegin(GL_QUADS);
-    glTexCoord2d( 0,  0); glVertex2f(-40,0);
-    glTexCoord2d(1,  0); glVertex2f(0,0);
-    glTexCoord2d(1, 1); glVertex2f(0, 20);
-    glTexCoord2d( 0, 1); glVertex2f(-40, 20);
-    glEnd();
-    glBegin(GL_QUADS);
-    glTexCoord2d( 0,  0); glVertex2f(0,0);
-    glTexCoord2d(1,  0); glVertex2f(40,0);
-    glTexCoord2d(1, 1); glVertex2f(40, 20);
-    glTexCoord2d( 0, 1); glVertex2f(0, 20);
+    glTexCoord2d( 0,  0); glVertex2f(0.f,0.f);
+    glTexCoord2d(1,  0); glVertex2f(40.f,0.f);
+    glTexCoord2d(1, 1); glVertex2f(40.f, 20.f);
+    glTexCoord2d( 0, 1); glVertex2f(0.f, 20.f);
     glEnd();
     
     glBegin(GL_QUADS);
-    glTexCoord2d( 0,  0); glVertex2f(40,0);
-    glTexCoord2d(1,  0); glVertex2f(80,0);
-    glTexCoord2d(1, 1); glVertex2f(80, 20);
-    glTexCoord2d( 0, 1); glVertex2f(40, 20);
+    glTexCoord2d( 0,  0); glVertex2f(40.f,0.f);
+    glTexCoord2d(1,  0); glVertex2f(80.f,0.f);
+    glTexCoord2d(1, 1); glVertex2f(80.f, 20.f);
+    glTexCoord2d(0, 1); glVertex2f(40.f, 20.f);
+    glEnd();
+    
+    glBegin(GL_QUADS);
+    glTexCoord2d( 0,  0); glVertex2f(80.f,   0.f);
+    glTexCoord2d(1,  0); glVertex2f(120.f,   0.f);
+    glTexCoord2d(1, 1); glVertex2f(120.f,  20.f);
+    glTexCoord2d( 0, 1); glVertex2f( 80.f,  20.f);
     glEnd();
     
 }
 
 void drawGrid(){
+    //horizontal
     glColor3f(1.f, 1.f, 0.f);
     for(int i = 0; i<=20; i++){
         glBegin(GL_LINES);
-            glVertex2f(40.f, 0.f + (i));
             glVertex2f(0.f, 0.f + (i));
+            glVertex2f(120.f, 0.f + (i));
         glEnd();
     }
-    for(int i = 0; i<=40; i++){
+    //vertical
+    for(int i = 0; i<=120; i++){
         glBegin(GL_LINES);
         glVertex2f(0.f + (i),0.f);
         glVertex2f(0.f + (i),20);
@@ -119,9 +124,48 @@ void drawGrid(){
     }
 }
 
+void highLightTile(){
+    GLint viewport[4]; //var to hold the viewport info
+    GLdouble modelview[16]; //var to hold the modelview info
+    GLdouble projection[16]; //var to hold the projection matrix info
+    GLfloat winX, winY, winZ; //variables to hold screen x,y,z coordinates
+    
+    glGetDoublev( GL_MODELVIEW_MATRIX, modelview ); //get the modelview info
+    glGetDoublev( GL_PROJECTION_MATRIX, projection ); //get the projection matrix info
+    glGetIntegerv( GL_VIEWPORT, viewport ); //get the viewport info
+    
+    double mouseXPos, mouseYPos;
+	glfwGetCursorPos(window, &mouseXPos, &mouseYPos);
+    
+	winX = (float)mouseXPos;
+    winY = (float)viewport[3] - (float)mouseYPos;
+	winZ = 0;
+	//get the world coordinates from the screen coordinates
+    glm::vec3 win = glm::vec3(winX,winY,winZ);
+    glm::mat4x4 projectionMatrix =glm::ortho<float>(-1, 1, -1 * (GLfloat) height / (GLfloat) width, (GLfloat) height/ (GLfloat) width, -1, 1);
+    glm::mat4x4 modelTransformMatrix = glm::mat4x4(1);
+    modelTransformMatrix = glm::translate(modelTransformMatrix, glm::vec3(0,0,-1));
+    modelTransformMatrix = glm::rotate(modelTransformMatrix, 0.f, glm::vec3(0,1,0));
+    modelTransformMatrix = glm::scale(modelTransformMatrix, glm::vec3(1,1,1));
+    //glScaled(camera.getPosition().z, camera.getPosition().z, 1);
+    //glTranslatef(camera.getPosition().x, camera.getPosition().y, 0);
+    glm::vec3 wmPos = glm::unProject(win, modelTransformMatrix, projectionMatrix, glm::vec4(0,0,1280,800));
+    
+    std::cout<< "mousePos X" << wmPos[0];
+    std::cout<< "mousePos Y" << wmPos[1];
+    
+    glColor3f(1.f, 1.f, 1.f);
+    glBegin(GL_QUADS);
+        glVertex2f(wmPos[0],       wmPos[1]);
+        glVertex2f(wmPos[0]+1.f,     wmPos[1]);
+        glVertex2f(wmPos[0]+1.f,     wmPos[1]+1.f);
+        glVertex2f(wmPos[0],     wmPos[1] + 1.f);
+    glEnd();
+}
+
 void drawScene(){
     // Clear the screen
-    glClearColor(0, 0, 0, 0);
+    glClearColor(0.0, 0.0, 0.0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Reset the matrix
@@ -138,6 +182,7 @@ void drawScene(){
     
     drawBackground();
     drawGrid();
+    highLightTile();
     
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -169,7 +214,7 @@ int main(void)
     glfwSetKeyCallback(window, key_callback);
     glfwSetErrorCallback(error_callback);
     glfwSetFramebufferSizeCallback(window, custom_fbsize_callback);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     
     glGenTextures(1, &_textureId);
     glBindTexture(GL_TEXTURE_2D, _textureId);
