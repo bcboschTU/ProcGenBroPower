@@ -112,20 +112,24 @@ void drawBackground(){
 
 void drawGrid(){
     //horizontal
-    glColor3f(1.f, 1.f, 0.f);
-    for(int i = 0; i<=20; i++){
-        glBegin(GL_LINES);
-            glVertex2f(0.f, 0.f + (i));
-            glVertex2f(120.f, 0.f + (i));
-        glEnd();
-    }
+    int widthL = level.getLevelWidth();
+    int heightL = level.getLevelHeight();
     //vertical
-    for(int i = 0; i<=120; i++){
+    glColor3f(1.f, 1.f, 0.f);
+    for(int i = 0; i<=widthL; i++){
         glBegin(GL_LINES);
         glVertex2f(0.f + (i),0.f);
         glVertex2f(0.f + (i),20);
         glEnd();
     }
+    //horizontal
+    for(int i = 0; i<=heightL; i++){
+        glBegin(GL_LINES);
+            glVertex2f(0.f, 0.f + (i));
+            glVertex2f(120.f, 0.f + (i));
+        glEnd();
+    }
+    
 }
 
 void highLightTile(){
@@ -164,6 +168,10 @@ void highLightTile(){
     glEnd();
 }
 
+void drawLevel(){
+    level.draw();
+}
+
 void drawScene(){
     // Clear the screen
     glClearColor(0.0, 0.0, 0.0, 0);
@@ -184,6 +192,7 @@ void drawScene(){
     drawBackground();
     drawGrid();
     highLightTile();
+    drawLevel();
     
     glfwSwapBuffers(window);
     glfwPollEvents();

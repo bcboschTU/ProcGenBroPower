@@ -22,6 +22,8 @@ public:
     int getLevelWidth();
     int getLevelHeight();
     Tile getTile(int x, int y);
+    void addTile(Tile tile, int x, int y);
+    void draw();
 private:
     int _sizeX;
     int _sizeY;
