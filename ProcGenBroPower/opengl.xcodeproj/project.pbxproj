@@ -14,9 +14,10 @@
 		D34ACF5B19EDC90D00E1134B /* image_helper.c in Sources */ = {isa = PBXBuildFile; fileRef = D34ACF5119EDC90D00E1134B /* image_helper.c */; };
 		D34ACF5C19EDC90D00E1134B /* SOIL.c in Sources */ = {isa = PBXBuildFile; fileRef = D34ACF5319EDC90D00E1134B /* SOIL.c */; };
 		D34ACF5D19EDC90D00E1134B /* stb_image_aug.c in Sources */ = {isa = PBXBuildFile; fileRef = D34ACF5519EDC90D00E1134B /* stb_image_aug.c */; };
-		D34ACF6119EE7BFD00E1134B /* tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D34ACF5F19EE7BFD00E1134B /* tile.cpp */; };
 		D39F804B194A5FB500775AD7 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D39F804A194A5FB500775AD7 /* OpenGL.framework */; };
 		D39F804F194A64CE00775AD7 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D39F804E194A64CE00775AD7 /* GLUT.framework */; };
+		D3C5C62719F0514B006384A0 /* tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3C5C62519F0514B006384A0 /* tile.cpp */; };
+		D3C5C62A19F05160006384A0 /* level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3C5C62819F05160006384A0 /* level.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -48,8 +49,6 @@
 		D34ACF5619EDC90D00E1134B /* stb_image_aug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_image_aug.h; sourceTree = "<group>"; };
 		D34ACF5719EDC90D00E1134B /* stbi_DDS_aug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stbi_DDS_aug.h; sourceTree = "<group>"; };
 		D34ACF5819EDC90D00E1134B /* stbi_DDS_aug_c.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stbi_DDS_aug_c.h; sourceTree = "<group>"; };
-		D34ACF5F19EE7BFD00E1134B /* tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tile.cpp; sourceTree = "<group>"; };
-		D34ACF6019EE7BFD00E1134B /* tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tile.h; sourceTree = "<group>"; };
 		D34AD06419EE882900E1134B /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		D34AD06519EE882900E1134B /* common.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = common.hpp; sourceTree = "<group>"; };
 		D34AD06719EE882900E1134B /* _features.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = _features.hpp; sourceTree = "<group>"; };
@@ -303,6 +302,10 @@
 		D39F803C194A5F9D00775AD7 /* opengl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = opengl; sourceTree = BUILT_PRODUCTS_DIR; };
 		D39F804A194A5FB500775AD7 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		D39F804E194A64CE00775AD7 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		D3C5C62519F0514B006384A0 /* tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = tile.cpp; path = common/tile.cpp; sourceTree = "<group>"; };
+		D3C5C62619F0514B006384A0 /* tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tile.h; path = common/tile.h; sourceTree = "<group>"; };
+		D3C5C62819F05160006384A0 /* level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = level.cpp; path = common/level.cpp; sourceTree = "<group>"; };
+		D3C5C62919F05160006384A0 /* level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = level.h; path = common/level.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -322,10 +325,12 @@
 		D34ACD4E19EC571C00E1134B /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				D34ACF3D19EC672300E1134B /* controls.cpp */,
 				D34ACF3E19EC672300E1134B /* controls.h */,
-				D34ACF5F19EE7BFD00E1134B /* tile.cpp */,
-				D34ACF6019EE7BFD00E1134B /* tile.h */,
+				D34ACF3D19EC672300E1134B /* controls.cpp */,
+				D3C5C62919F05160006384A0 /* level.h */,
+				D3C5C62819F05160006384A0 /* level.cpp */,
+				D3C5C62619F0514B006384A0 /* tile.h */,
+				D3C5C62519F0514B006384A0 /* tile.cpp */,
 			);
 			name = Common;
 			sourceTree = "<group>";
@@ -722,11 +727,12 @@
 			files = (
 				D34ACF5C19EDC90D00E1134B /* SOIL.c in Sources */,
 				D34ACF4219EC679B00E1134B /* main.cpp in Sources */,
+				D3C5C62A19F05160006384A0 /* level.cpp in Sources */,
+				D3C5C62719F0514B006384A0 /* tile.cpp in Sources */,
 				D34ACF5B19EDC90D00E1134B /* image_helper.c in Sources */,
 				D34ACF5D19EDC90D00E1134B /* stb_image_aug.c in Sources */,
 				D34ACF3F19EC672300E1134B /* controls.cpp in Sources */,
 				D34ACF5A19EDC90D00E1134B /* image_DXT.c in Sources */,
-				D34ACF6119EE7BFD00E1134B /* tile.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

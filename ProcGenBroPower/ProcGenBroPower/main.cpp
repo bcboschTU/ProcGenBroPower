@@ -6,6 +6,7 @@
 #include "SOIL.h"
 #include "controls.h"
 #include "tile.h"
+#include "level.h"
 
 GLFWwindow* window;
 Camera camera;
@@ -13,13 +14,13 @@ int width = 1280;
 int height = 800;
 int camPosX = 0;
 int camPosY = 0;
-float camPosZ = 0.01;
+float camPosZ = 0.1;
 int nearPlane = 0;
 int farPlane = 2;
 Tile tilesSheet1[1000];
 Tile tilesSheet2[1000];
 Tile tilesSheet3[1000];
-Tile tiles[120][20];
+Level level(120,20);
 GLuint _textureId;
 
 
@@ -128,36 +129,33 @@ void drawGrid(){
 }
 
 void highLightTile(){
-    GLint viewportL[4]; //var to hold the viewport info
-    GLfloat winX, winY, winZ; //variables to hold screen x,y,z coordinates
-    glGetIntegerv( GL_VIEWPORT, viewportL ); //get the viewport info
-    
+    GLfloat winX, winY, winZ;
     double mouseXPos, mouseYPos;
 	glfwGetCursorPos(window, &mouseXPos, &mouseYPos);
+    GLint viewportL[4];
+    glGetIntegerv( GL_VIEWPORT, viewportL );
     
-	winX = (float)mouseXPos;
+    winX = (float)mouseXPos;
     winY = (float)viewportL[3] - (float)mouseYPos;
 	winZ = 0;
-	//get the world coordinates from the screen coordinates
-    glm::vec3 win = glm::vec3(winX,winY,winZ);
-    
     glm::vec4 viewport = glm::vec4(viewportL[0], viewportL[1], viewportL[2], viewportL[3]);
-    glm::mat4 tmpView(1.0f);
-    //glm::mat4 tmpProj = glm::ortho<float>(-aspect*width, aspect*height, -5, 5, -1, 1);
-    glm::mat4 tmpProj = glm::ortho<float>(-1 * (GLfloat) width / (GLfloat) height,(GLfloat) width/ (GLfloat) height , -1, 1, -1, 1);
-    //glm::vec3 screenPos = glm::vec3(0.0f, 0.0f, 1.0f);
-    glm::vec3 worldPos = glm::unProject(win, tmpView, tmpProj, viewport);
-    glScaled(camera.getPosition().z, camera.getPosition().z, 1);
-    glTranslatef(-camera.getPosition().x, -camera.getPosition().y, 0);
+    glm::mat4 viewMatrix = glm::mat4(1.0f); //View matrix is translated 5 units back.
+    viewMatrix = glm::scale(viewMatrix, glm::vec3(camera.getPosition().z, camera.getPosition().z, 1));
+    viewMatrix = glm::translate(viewMatrix,glm::vec3(camera.getPosition().x, camera.getPosition().y, 0));
+    glm::mat4 projectionMatrix = glm::ortho<float>(-1, 1, -1 * (GLfloat) height / (GLfloat) width, (GLfloat) height/ (GLfloat) width, -1, 1);
+    
+    glm::vec3 win = glm::vec3(winX,winY,winZ);
+    glm::vec3 v = glm::unProject(win, viewMatrix, projectionMatrix, viewport);
+    
     //worldPos = worldPos / (worldPos.z * -1.f);
-    int newPosX = worldPos[0];
-    int newPosY = worldPos[1];
+    int newPosX = v[0];
+    int newPosY = v[1];
     
     std::cout<< "mousePos X2 " << newPosX;
     std::cout<< "mousePos Y2 " << newPosY;
     std::cout<< "\n";
     
-    glColor3f(1.f, 1.f, 0.f);
+    glColor4f(1.f, 1.f, 0.f,0.5f);
     glBegin(GL_QUADS);
         glVertex2f(newPosX,       newPosY);
         glVertex2f(newPosX+1.f,     newPosY);
