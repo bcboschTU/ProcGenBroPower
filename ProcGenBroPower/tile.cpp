@@ -24,3 +24,15 @@ void Tile::setPosition(float x, float y){
 float Tile::getPosx(){
     return _posX;
 }
+
+int Tile::getSpriteSheet(){
+    return _spriteSheet;
+}
+
+void Tile::setTexture(GLuint texture,float sheetPosX, float sheetPosY,float sheetWitdh,float sheetHeight){
+    _texture = texture;
+    _sheetPosX = sheetPosX;
+    _sheetPosY = sheetPosY;
+    _sheetWitdh = sheetWitdh;
+    _sheetHeight = sheetHeight;
+}

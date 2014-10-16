@@ -11,12 +11,15 @@ GLFWwindow* window;
 Camera camera;
 int width = 1280;
 int height = 800;
-int camPosX = -10;
-int camPosY = -10;
-float camPosZ = 0.05;
+int camPosX = 0;
+int camPosY = 0;
+float camPosZ = 0.01;
 int nearPlane = 0;
 int farPlane = 2;
-Tile tiles[100][20];
+Tile tilesSheet1[1000];
+Tile tilesSheet2[1000];
+Tile tilesSheet3[1000];
+Tile tiles[120][20];
 GLuint _textureId;
 
 
@@ -125,41 +128,41 @@ void drawGrid(){
 }
 
 void highLightTile(){
-    GLint viewport[4]; //var to hold the viewport info
-    GLdouble modelview[16]; //var to hold the modelview info
-    GLdouble projection[16]; //var to hold the projection matrix info
+    GLint viewportL[4]; //var to hold the viewport info
     GLfloat winX, winY, winZ; //variables to hold screen x,y,z coordinates
-    
-    glGetDoublev( GL_MODELVIEW_MATRIX, modelview ); //get the modelview info
-    glGetDoublev( GL_PROJECTION_MATRIX, projection ); //get the projection matrix info
-    glGetIntegerv( GL_VIEWPORT, viewport ); //get the viewport info
+    glGetIntegerv( GL_VIEWPORT, viewportL ); //get the viewport info
     
     double mouseXPos, mouseYPos;
 	glfwGetCursorPos(window, &mouseXPos, &mouseYPos);
     
 	winX = (float)mouseXPos;
-    winY = (float)viewport[3] - (float)mouseYPos;
+    winY = (float)viewportL[3] - (float)mouseYPos;
 	winZ = 0;
 	//get the world coordinates from the screen coordinates
     glm::vec3 win = glm::vec3(winX,winY,winZ);
-    glm::mat4x4 projectionMatrix =glm::ortho<float>(-1, 1, -1 * (GLfloat) height / (GLfloat) width, (GLfloat) height/ (GLfloat) width, -1, 1);
-    glm::mat4x4 modelTransformMatrix = glm::mat4x4(1);
-    modelTransformMatrix = glm::translate(modelTransformMatrix, glm::vec3(0,0,-1));
-    modelTransformMatrix = glm::rotate(modelTransformMatrix, 0.f, glm::vec3(0,1,0));
-    modelTransformMatrix = glm::scale(modelTransformMatrix, glm::vec3(1,1,1));
-    //glScaled(camera.getPosition().z, camera.getPosition().z, 1);
-    //glTranslatef(camera.getPosition().x, camera.getPosition().y, 0);
-    glm::vec3 wmPos = glm::unProject(win, modelTransformMatrix, projectionMatrix, glm::vec4(0,0,1280,800));
     
-    std::cout<< "mousePos X" << wmPos[0];
-    std::cout<< "mousePos Y" << wmPos[1];
+    glm::vec4 viewport = glm::vec4(viewportL[0], viewportL[1], viewportL[2], viewportL[3]);
+    glm::mat4 tmpView(1.0f);
+    //glm::mat4 tmpProj = glm::ortho<float>(-aspect*width, aspect*height, -5, 5, -1, 1);
+    glm::mat4 tmpProj = glm::ortho<float>(-1 * (GLfloat) width / (GLfloat) height,(GLfloat) width/ (GLfloat) height , -1, 1, -1, 1);
+    //glm::vec3 screenPos = glm::vec3(0.0f, 0.0f, 1.0f);
+    glm::vec3 worldPos = glm::unProject(win, tmpView, tmpProj, viewport);
+    glScaled(camera.getPosition().z, camera.getPosition().z, 1);
+    glTranslatef(-camera.getPosition().x, -camera.getPosition().y, 0);
+    //worldPos = worldPos / (worldPos.z * -1.f);
+    int newPosX = worldPos[0];
+    int newPosY = worldPos[1];
     
-    glColor3f(1.f, 1.f, 1.f);
+    std::cout<< "mousePos X2 " << newPosX;
+    std::cout<< "mousePos Y2 " << newPosY;
+    std::cout<< "\n";
+    
+    glColor3f(1.f, 1.f, 0.f);
     glBegin(GL_QUADS);
-        glVertex2f(wmPos[0],       wmPos[1]);
-        glVertex2f(wmPos[0]+1.f,     wmPos[1]);
-        glVertex2f(wmPos[0]+1.f,     wmPos[1]+1.f);
-        glVertex2f(wmPos[0],     wmPos[1] + 1.f);
+        glVertex2f(newPosX,       newPosY);
+        glVertex2f(newPosX+1.f,     newPosY);
+        glVertex2f(newPosX+1.f,     newPosY+1.f);
+        glVertex2f(newPosX,     newPosY + 1.f);
     glEnd();
 }
 

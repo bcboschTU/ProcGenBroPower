@@ -10,6 +10,7 @@
 #define __opengl__Tile__
 
 #include <iostream>
+#include <GLUT/GLUT.h>
 class Tile
 {
 public:
@@ -17,12 +18,20 @@ public:
     void setPosition(float x, float y);
     float getPosx();
     float getPosY();
+    int getSpriteSheet();
+    void setTexture(GLuint texture,float sheetPosX, float sheetPosY,float sheetWitdh,float sheetHeight);
 private:
-    float _posX;     // X position of a tile
-    float _posY;     // Y position of a tile
-    double _length;   // Length of a tile
-    double _breadth;  // Breadth of a tile
-    double _height;   // Height of a tile
+    float _posX;        // X position of a tile
+    float _posY;        // Y position of a tile
+    double _length;     // Length of a tile
+    double _breadth;    // Breadth of a tile
+    double _height;     // Height of a tile
+    float _sheetPosX;   // SheetPosX of the texture
+    float _sheetPosY;   //SheetPosy of the texture
+    float _sheetWitdh;  //Witdh of the texture
+    float _sheetHeight; //Height of the texture
+    int _spriteSheet;
+    GLuint _texture;
 };
 
 #endif /* defined(__opengl__Tile__) */
