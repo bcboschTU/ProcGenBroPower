@@ -12,7 +12,7 @@
 *.so
 *.dylib
 *.dll
-
+*.xcodeproj
 # Fortran module files
 *.mod
 
@@ -29,3 +29,9 @@
 ProcGenBroPower/Debug/
 ProcGenBroPower/ProcGenBroPower/Debug/
 ProcGenBroPower/ProcGenBroPower.opensdf
+
+ProcGenBroPower/opengl.xcodeproj/project.pbxproj
+
+*.xcuserstate
+
+ProcGenBroPower/opengl.xcodeproj/project.xcworkspace/xcuserdata/bertbosch.xcuserdatad/UserInterfaceState.xcuserstate
