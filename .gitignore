@@ -12,7 +12,7 @@
 *.so
 *.dylib
 *.dll
-*.xcodeproj
+
 # Fortran module files
 *.mod
 
@@ -30,7 +30,7 @@ ProcGenBroPower/Debug/
 ProcGenBroPower/ProcGenBroPower/Debug/
 ProcGenBroPower/ProcGenBroPower.opensdf
 
-ProcGenBroPower/opengl.xcodeproj/project.pbxproj
+ProcGenBroPower/opengl.xcodeproj/
 
 *.xcuserstate
 
